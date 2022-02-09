@@ -1,10 +1,8 @@
 import { shallowMount } from '@vue/test-utils';
 import HelloWorld from '@/components/HelloWorld.vue';
-import axios from 'axios';
-import { mocked } from 'jest-mock';
-//
-jest.mock('axios');
-const mockedAxios = mocked(axios, true);
+
+const axios = require('axios');
+
 describe('HelloWorld.vue', () => {
   it('renders props.msg when passed', () => {
     const msg = 'new message';
@@ -15,8 +13,7 @@ describe('HelloWorld.vue', () => {
   });
   it('should mock axios module', () => {
     const data = { data: { username: 'xxx' } };
-    mockedAxios.get.mockResolvedValue(data);
-    return axios.get('/xxx').then((response) => {
+    return axios.get('/xxx').then((response: any) => {
       expect(response).toEqual(data);
     });
   });
