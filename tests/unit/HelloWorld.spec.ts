@@ -1,4 +1,4 @@
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, VueWrapper } from '@vue/test-utils';
 import HelloWorld from '@/components/HelloWorld.vue';
 import { mocked } from 'jest-mock';
 import axios from 'axios';
@@ -9,19 +9,31 @@ const mockAxios = mocked(axios, true);
 
 describe('HelloWorld.vue', () => {
 
-  it('should render props.msg when passed', () => {
+  let wrapper: VueWrapper<any>;
+  const msg = 'hello world';
+  beforeEach(() => {
     const msg = 'hello world';
-    const wrapper = mount(HelloWorld, {
+    wrapper = mount(HelloWorld, {
       props: { msg },
     });
+  });
+
+  afterEach(() => {
+    mockAxios.get.mockReset();
+  });
+  it('should render props.msg when passed', () => {
+    // const msg = 'hello world';
+    // const wrapper = mount(HelloWorld, {
+    //   props: { msg },
+    // });
     // console.log(wrapper.html());
     expect(wrapper.get('h1').text()).toBe(msg);
     // console.log(wrapper.getComponent(Child).text());
   });
   it('should plus count when click button', async () => {
-    const wrapper = mount(HelloWorld, {
-      msg: 'counter',
-    });
+    // const wrapper = mount(HelloWorld, {
+    //   msg: 'counter',
+    // });
     const button = wrapper.get('button');
     // dom update is async
     await button.trigger('click');
@@ -29,9 +41,9 @@ describe('HelloWorld.vue', () => {
   });
   it('should add todos', async () => {
     const todoContent = 'buy milk';
-    const wrapper = mount(HelloWorld, {
-      msg: 'todos',
-    });
+    // const wrapper = mount(HelloWorld, {
+    //   msg: 'todos',
+    // });
     const input = wrapper.get('input');
     const button = wrapper.get('button.add-todo');
     await input.setValue(todoContent);
@@ -42,9 +54,9 @@ describe('HelloWorld.vue', () => {
   });
   it('should emit send event', async () => {
     const todoContent = 'buy milk';
-    const wrapper = mount(HelloWorld, {
-      msg: 'todos',
-    });
+    // const wrapper = mount(HelloWorld, {
+    //   msg: 'todos',
+    // });
     const button = wrapper.get('button.add-todo');
     const input = wrapper.get('input');
     await input.setValue(todoContent);
@@ -53,7 +65,7 @@ describe('HelloWorld.vue', () => {
   });
 
   it('should fetch user information when click load button', async () => {
-    const wrapper = mount(HelloWorld, { msg: 'Test HTTP Request' });
+    // const wrapper = mount(HelloWorld, { msg: 'Test HTTP Request' });
     const response = {
       data: {
         'name': 'Leanne Graham',
@@ -74,7 +86,7 @@ describe('HelloWorld.vue', () => {
     expect(wrapper.find('.loading').exists()).toBeFalsy();
   });
   it('should display error when promise reject', async () => {
-    const wrapper = mount(HelloWorld, { msg: 'Error' });
+    // const wrapper = mount(HelloWorld, { msg: 'Error' });
     mockAxios.get.mockRejectedValue({ message: 'error' });
     await wrapper.get('.user').trigger('click');
     expect(mockAxios.get).toHaveBeenCalled();
