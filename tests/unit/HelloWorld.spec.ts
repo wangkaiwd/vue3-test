@@ -60,14 +60,14 @@ describe('HelloWorld.vue', () => {
       }
     };
     mockAxios.get.mockResolvedValue(response);
-    const button = wrapper.get('.user');
-    await button.trigger('click');
+    await wrapper.get('.user').trigger('click');
     // todo: why this is false ?
-    // expect(wrapper.find('.loading').exists()).toBe(true);
-
+    expect(mockAxios.get).toHaveBeenCalled();
+    // console.log(wrapper.html());
+    expect(wrapper.find('.loading').exists()).toBe(true);
     // Wait Until the DOM updates
     await flushPromises();
-    expect(mockAxios.get).toHaveBeenCalled();
+
     expect(wrapper.get('.username').text()).toBe(response.data.username);
     // https://jestjs.io/docs/expect#tothrowerror
     expect(wrapper.find('.loading').exists()).toBeFalsy();

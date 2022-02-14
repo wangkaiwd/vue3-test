@@ -48,15 +48,15 @@ export default defineComponent({
     const getUser = () => {
       user.loading = true;
       axios.get('https://jsonplaceholder.typicode.com/users/1')
-        .finally((() => {
-          user.loading = false;
-        }))
         .then((res) => {
           user.data = res.data;
         })
         .catch((err) => {
           user.error = err.message;
-        });
+        })
+        .finally((() => {
+          user.loading = false;
+        }))
     };
     const setCount = () => {
       count.value++;
