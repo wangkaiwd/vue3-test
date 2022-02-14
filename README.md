@@ -21,7 +21,7 @@ api:
 * [trigger](https://test-utils.vuejs.org/api/#trigger)
 * [emitted](https://test-utils.vuejs.org/api/#emitted)
 * [exists](https://test-utils.vuejs.org/api/#exists): only be used to `find` because of `get` occur error if element non-exists
-
+* [global.components](https://test-utils.vuejs.org/api/#global-components)
 ### Test Steps
 1. render component
 2. component display successfully
@@ -29,5 +29,5 @@ api:
 4. test view update
    1. dom update is async
    
-
-
+### Problem
+* import on demand not work ?
