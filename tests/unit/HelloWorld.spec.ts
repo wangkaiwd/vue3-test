@@ -8,6 +8,7 @@ jest.mock('axios');
 const mockAxios = mocked(axios, true);
 
 describe('HelloWorld.vue', () => {
+
   it('should render props.msg when passed', () => {
     const msg = 'hello world';
     const wrapper = mount(HelloWorld, {
@@ -71,5 +72,13 @@ describe('HelloWorld.vue', () => {
     expect(wrapper.get('.username').text()).toBe(response.data.username);
     // https://jestjs.io/docs/expect#tothrowerror
     expect(wrapper.find('.loading').exists()).toBeFalsy();
+  });
+  it('should display error when promise reject', async () => {
+    const wrapper = mount(HelloWorld, { msg: 'Error' });
+    mockAxios.get.mockRejectedValue({ message: 'error' });
+    await wrapper.get('.user').trigger('click');
+    expect(mockAxios.get).toHaveBeenCalled();
+    await flushPromises();
+    expect(wrapper.find('.error').exists()).toBe(true);
   });
 });
