@@ -1,5 +1,11 @@
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import HelloWorld from '@/components/HelloWorld.vue';
+import { mocked } from 'jest-mock';
+import axios from 'axios';
+
+jest.mock('axios');
+
+const mockAxios = mocked(axios, true);
 
 describe('HelloWorld.vue', () => {
   it('should render props.msg when passed', () => {
@@ -43,5 +49,27 @@ describe('HelloWorld.vue', () => {
     await input.setValue(todoContent);
     await button.trigger('click');
     expect(wrapper.emitted('send')?.[0]).toEqual([todoContent]);
+  });
+
+  it('should fetch user information when click load button', async () => {
+    const wrapper = mount(HelloWorld, { msg: 'Test HTTP Request' });
+    const response = {
+      data: {
+        'name': 'Leanne Graham',
+        'username': 'Bret',
+      }
+    };
+    mockAxios.get.mockResolvedValue(response);
+    const button = wrapper.get('.user');
+    await button.trigger('click');
+    // todo: why this is false ?
+    // expect(wrapper.find('.loading').exists()).toBe(true);
+
+    // Wait Until the DOM updates
+    await flushPromises();
+    expect(mockAxios.get).toHaveBeenCalled();
+    expect(wrapper.get('.username').text()).toBe(response.data.username);
+    // https://jestjs.io/docs/expect#tothrowerror
+    expect(wrapper.find('.loading').exists()).toBeFalsy();
   });
 });
