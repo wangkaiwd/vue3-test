@@ -22,11 +22,23 @@ api:
 * [emitted](https://test-utils.vuejs.org/api/#emitted)
 * [exists](https://test-utils.vuejs.org/api/#exists): only be used to `find` because of `get` occur error if element non-exists
 * [global.components](https://test-utils.vuejs.org/api/#global-components)
+
+get real dom node
+```js
+const inputElement = wrapper.get('input').element
+// do DOM manipulate
+```
+
+others: 
+* mock `ant-design-vue`
+* mock `vuex`
+* mock `vue-router`
+* test `vuex store`
+
 ### Test Steps
-1. render component
-2. component display successfully
-3. trigger events
-4. test view update
+1. render component and component display successfully
+2. trigger events
+3. test view update
    1. dom update is async
    
 ### Problem
