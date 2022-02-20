@@ -2,7 +2,7 @@
   <div class="home">
     <!--    <img alt="Vue logo" src="../assets/logo.png" />-->
     <!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />-->
-    <!--    <user-profile></user-profile>-->
+        <user-profile></user-profile>
     <color-picker :value="value" @change="value = $event"></color-picker>
   </div>
 </template>

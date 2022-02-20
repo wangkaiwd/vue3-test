@@ -7,9 +7,11 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from 'vue';
+import { Button } from 'ant-design-vue';
 
 export default defineComponent({
   name: 'UserProfile',
+  components: { AButton: Button },
   setup () {
     const state = reactive({});
     return {
