@@ -19,7 +19,7 @@ describe('HelloWorld.vue', () => {
   });
 
   afterEach(() => {
-    mockAxios.get.mockReset();
+    mockAxios.mockReset();
   });
   it('should render props.msg when passed', () => {
     // const msg = 'hello world';
@@ -76,7 +76,6 @@ describe('HelloWorld.vue', () => {
     await wrapper.get('.user').trigger('click');
     // todo: why this is false ?
     expect(mockAxios.get).toHaveBeenCalled();
-    // console.log(wrapper.html());
     expect(wrapper.find('.loading').exists()).toBe(true);
     // Wait Until the DOM updates
     await flushPromises();
