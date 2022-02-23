@@ -3,69 +3,119 @@
     <input ref="inputRef" type="file" class="upload-input" @change="onChange">
     <div class="trigger">
       <slot>
-        <a-button class="upload-button" @click="onClick" type="primary">上传</a-button>
+        <a-button
+          class="upload-button"
+          :disabled="isUploading"
+          @click="onClick"
+          type="primary"
+        >
+          上传
+        </a-button>
       </slot>
     </div>
-    <div class="upload-loading" v-if="fileStatus === 'loading'">上传中</div>
-    <div class="upload-success" v-if="fileStatus === 'success'">上传成功</div>
-    <div class="upload-error" v-if="fileStatus === 'error'">上传失败</div>
+    <ul class="upload-list">
+      <li
+        class="upload-item"
+        :class="`upload-item-${item.status}`"
+        v-for="item in uploadedFiles"
+        :key="item.uid"
+      >
+        <span class="upload-item-filename">{{ item.name }}</span>
+        <close-outlined class="upload-item-delete" @click="onDelete(item.uid)"></close-outlined>
+        <loading-outlined v-if="item.status === 'loading'"></loading-outlined>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, reactive, ref } from 'vue';
 import { Button } from 'ant-design-vue';
 import axios from 'axios';
+import { CloseOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 
-type FILE_STATUS = 'ready' | 'loading' | 'success' | 'error'
+type UploadStatus = 'ready' | 'loading' | 'success' | 'error'
+
+interface UploadFile {
+  uid: string;
+  status: UploadStatus;
+  name: string;
+  //response:
+  raw: File;
+}
+
 export default defineComponent({
   name: 'Upload',
   props: {
     action: {
-      type: String
+      type: String,
+      default: 'http://localhost:3000/upload'
     }
   },
-  components: { AButton: Button },
+  components: { AButton: Button, CloseOutlined, LoadingOutlined },
   setup (props) {
     const inputRef = ref<null | HTMLInputElement>(null);
-    const fileStatus = ref<FILE_STATUS>('ready');
+    const uploadedFiles = ref<UploadFile[]>([]);
     const onClick = (e: Event) => {
       if (inputRef.value) { // trigger click event of input manually
         inputRef.value.click();
       }
     };
-    const upload = (file: File) => {
+    const upload = (file: UploadFile) => { // file
       const formData = new FormData();
-      formData.append('file', file);
-      fileStatus.value = 'loading';
-      axios.post(props.action!, {
-        method: 'post', data: formData
-      }).then((res) => {
+      formData.append('file', file.raw);
+      file.status = 'loading';
+      axios.post(props.action!, formData).then((res) => {
         // console.log('res', res);
-        fileStatus.value = 'success';
+        file.status = 'success';
       }).catch((err) => {
         // console.log('err', err);
-        fileStatus.value = 'error';
+        file.status = 'error';
       });
     };
+    const createUploadFile = (raw: File): UploadFile => {
+      const uid = Date.now().toString();
+      return reactive({
+        uid,
+        name: raw.name,
+        status: 'ready',
+        raw
+      });
+    };
+    const onDelete = (uid: string) => {
+      uploadedFiles.value = uploadedFiles.value.filter(item => item.uid !== uid);
+    };
+
+    const isUploading = computed(() => {
+      return uploadedFiles.value.some((item) => item.status === 'loading');
+    });
 
     const onChange = (e: Event) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        upload(file);
+      const files = Array.from((e.target as HTMLInputElement).files ?? []);
+      if (inputRef.value) {
+        inputRef.value.value = '';
       }
-      // if (files) {
-      //   for (let i = 0; i < files.length; i++) {
-      //     const file = files[i];
-      //     upload(file);
-      //   }
-      // }
+      if (files) {
+        for (let i = 0; i < files.length; i++) {
+          const rawFile = files[i];
+          const file = createUploadFile(rawFile);
+          uploadedFiles.value.push(file);
+          // must change proxy object
+          // change file(origin object) wouldn't trigger update
+          // upload(getItemById(file.uid)!);
+
+          // or create reactive object
+          upload(file);
+        }
+      }
     };
     return {
       onClick,
       inputRef,
       onChange,
-      fileStatus
+      uploadedFiles,
+      onDelete,
+      isUploading
     };
   },
 });
@@ -75,6 +125,24 @@ export default defineComponent({
 .upload {
   .upload-input {
     display: none;
+  }
+  .upload-item-success {
+    color: green;
+  }
+  .upload-item-error {
+    color: red;
+  }
+  .upload-list {
+    margin: 0;
+    padding: 0;
+    width: 300px;
+  }
+  .upload-item {
+    display: flex;
+    align-items: center;
+    .upload-item-delete {
+      margin-left: auto;
+    }
   }
 }
 </style>

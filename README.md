@@ -43,3 +43,4 @@ others:
    
 ### Problem
 * import on demand not work ?
+* why loading not display before flushPromises ?
