@@ -8,10 +8,21 @@ const mockAxios = mocked(axios, true);
 const testFile = new File(['foo'], 'foo.txt', {
   type: 'text/plain',
 });
+const mockComponent = {
+  template: '<div></div>'
+};
 describe('upload.vue', () => {
   let wrapper: VueWrapper<any>;
   beforeEach(() => {
-    wrapper = mount(Upload, { props: { action: 'test.url' } });
+    wrapper = mount(Upload, {
+      props: { action: 'test.url' },
+      global: {
+        stubs: {
+          CloseOutlined: mockComponent,
+          LoadingOutlined: mockComponent
+        }
+      }
+    });
   });
   afterEach(() => {
     mockAxios.mockReset();
