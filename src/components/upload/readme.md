@@ -12,6 +12,7 @@
 
 ### Vue3 demo
 
+
 ```js
 const file = {a:1}
 const uploadedFiles = new Proxy(file,{
@@ -29,7 +30,7 @@ file.a = 2
 uploadedFiles.a = 3
 ```
 
-vue code:
+vue code: you can use `reactive` method in any position within `script`
 ```js
 const file = reactive({a:1})
 const uploadedFiles = ref([])
@@ -37,4 +38,34 @@ uploadedFiles.value[0] = file
 // chnage origin object not trigger get/set meethod
 file.a = 2
 uploadedFiles.a = 3
+```
+
+
+example
+```ts
+ const createUploadFile = (raw: File): UploadFile => {
+  const uid = Date.now().toString();
+  return reactive({
+    uid,
+    name: raw.name,
+    status: 'ready',
+    raw
+  });
+};
+const uploadFiles = (files: File[]) => {
+  if (files) {
+    for (let i = 0; i < files.length; i++) {
+      const rawFile = files[i];
+      // can create reactive object then assign it to another reactive object
+      const file = createUploadFile(rawFile);
+      uploadedFiles.value.push(file);
+      // must change proxy object
+      // change file(origin object) wouldn't trigger update
+      // upload(getItemById(file.uid)!);
+
+      // or create reactive object
+      uploadFile(file);
+    }
+  }
+};
 ```

@@ -22,6 +22,8 @@ api:
 * [emitted](https://test-utils.vuejs.org/api/#emitted)
 * [exists](https://test-utils.vuejs.org/api/#exists): only be used to `find` because of `get` occur error if element non-exists
 * [global.components](https://test-utils.vuejs.org/api/#global-components)
+* [global.stubs](https://test-utils.vuejs.org/api/#global)
+  * mock some child component (mock icon component)
 
 get real dom node
 ```js
@@ -44,3 +46,4 @@ others:
 ### Problem
 * import on demand not work ?
 * why loading not display before flushPromises ?
+  * test loading always error

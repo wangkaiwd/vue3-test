@@ -1,7 +1,7 @@
 <template>
   <div class="upload">
     <input ref="inputRef" type="file" class="upload-input" @change="onChange">
-    <div class="trigger">
+    <div class="upload-trigger">
       <slot>
         <a-button
           class="upload-button"
@@ -20,29 +20,24 @@
         v-for="item in uploadedFiles"
         :key="item.uid"
       >
-        <span class="upload-item-filename">{{ item.name }}</span>
+        <slot name="uploaded" :file="item" :file-list="uploadedFiles">
+          <span class="upload-item-filename">{{ item.name }}</span>
+        </slot>
         <close-outlined class="upload-item-delete" @click="onDelete(item.uid)"></close-outlined>
-        <loading-outlined v-if="item.status === 'loading'"></loading-outlined>
+        <slot name="loading" v-if="item.status === 'loading'">
+          <loading-outlined></loading-outlined>
+        </slot>
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref } from 'vue';
+import { computed, defineComponent, PropType, reactive, ref } from 'vue';
 import { Button } from 'ant-design-vue';
 import axios from 'axios';
 import { CloseOutlined, LoadingOutlined } from '@ant-design/icons-vue';
-
-type UploadStatus = 'ready' | 'loading' | 'success' | 'error'
-
-interface UploadFile {
-  uid: string;
-  status: UploadStatus;
-  name: string;
-  //response:
-  raw: File;
-}
+import { UploadFile } from '@/components/upload/types';
 
 export default defineComponent({
   name: 'Upload',
@@ -50,6 +45,9 @@ export default defineComponent({
     action: {
       type: String,
       default: 'http://localhost:3000/upload'
+    },
+    beforeUpload: {
+      type: Function as PropType<(file: UploadFile) => boolean>
     }
   },
   components: { AButton: Button, CloseOutlined, LoadingOutlined },
@@ -61,18 +59,6 @@ export default defineComponent({
         inputRef.value.click();
       }
     };
-    const upload = (file: UploadFile) => { // file
-      const formData = new FormData();
-      formData.append('file', file.raw);
-      file.status = 'loading';
-      axios.post(props.action!, formData).then((res) => {
-        // console.log('res', res);
-        file.status = 'success';
-      }).catch((err) => {
-        // console.log('err', err);
-        file.status = 'error';
-      });
-    };
     const createUploadFile = (raw: File): UploadFile => {
       const uid = Date.now().toString();
       return reactive({
@@ -80,6 +66,36 @@ export default defineComponent({
         name: raw.name,
         status: 'ready',
         raw
+      });
+    };
+    const uploadFiles = (files: File[]) => {
+      if (files) {
+        for (let i = 0; i < files.length; i++) {
+          const rawFile = files[i];
+          const file = createUploadFile(rawFile);
+          uploadedFiles.value.push(file);
+          // must change proxy object
+          // change file(origin object) wouldn't trigger update
+          // upload(getItemById(file.uid)!);
+
+          // or create reactive object
+          uploadFile(file);
+        }
+      }
+    };
+    const uploadFile = (file: UploadFile) => { // file
+      if (!props.beforeUpload?.(file)) {
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', file.raw);
+      file.status = 'loading';
+      axios.post(props.action!, formData).then((res) => {
+        file.response = res.data;
+        file.status = 'success';
+      }).catch((err) => {
+        // console.log('err', err);
+        file.status = 'error';
       });
     };
     const onDelete = (uid: string) => {
@@ -95,19 +111,7 @@ export default defineComponent({
       if (inputRef.value) {
         inputRef.value.value = '';
       }
-      if (files) {
-        for (let i = 0; i < files.length; i++) {
-          const rawFile = files[i];
-          const file = createUploadFile(rawFile);
-          uploadedFiles.value.push(file);
-          // must change proxy object
-          // change file(origin object) wouldn't trigger update
-          // upload(getItemById(file.uid)!);
-
-          // or create reactive object
-          upload(file);
-        }
-      }
+      uploadFiles(files);
     };
     return {
       onClick,
