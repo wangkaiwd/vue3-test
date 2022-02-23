@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive, ref } from 'vue';
+import { computed, defineComponent, getCurrentInstance, PropType, reactive, ref } from 'vue';
 import { Button } from 'ant-design-vue';
 import axios from 'axios';
 import { CloseOutlined, LoadingOutlined } from '@ant-design/icons-vue';
@@ -68,23 +68,26 @@ export default defineComponent({
         raw
       });
     };
-    const uploadFiles = (files: File[]) => {
-      if (files) {
-        for (let i = 0; i < files.length; i++) {
-          const rawFile = files[i];
-          const file = createUploadFile(rawFile);
-          uploadedFiles.value.push(file);
-          // must change proxy object
-          // change file(origin object) wouldn't trigger update
-          // upload(getItemById(file.uid)!);
+    const uploadFiles = (files: FileList | null) => {
+      if (!files) {return;}
+      const normalizedFiles = Array.from(files);
+      if (inputRef.value) {
+        inputRef.value.value = '';
+      }
+      for (let i = 0; i < normalizedFiles.length; i++) {
+        const rawFile = normalizedFiles[i];
+        const file = createUploadFile(rawFile);
+        uploadedFiles.value.push(file);
+        // must change proxy object
+        // change file(origin object) wouldn't trigger update
+        // upload(getItemById(file.uid)!);
 
-          // or create reactive object
-          uploadFile(file);
-        }
+        // or create reactive object
+        uploadFile(file);
       }
     };
     const uploadFile = (file: UploadFile) => { // file
-      if (!props.beforeUpload?.(file)) {
+      if (props.beforeUpload && !props.beforeUpload(file)) {
         return;
       }
       const formData = new FormData();
@@ -107,10 +110,7 @@ export default defineComponent({
     });
 
     const onChange = (e: Event) => {
-      const files = Array.from((e.target as HTMLInputElement).files ?? []);
-      if (inputRef.value) {
-        inputRef.value.value = '';
-      }
+      const files = (e.target as HTMLInputElement).files;
       uploadFiles(files);
     };
     return {

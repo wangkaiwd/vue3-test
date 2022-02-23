@@ -53,7 +53,7 @@ describe('upload.vue', () => {
     wrapper = createWrapper();
   });
   afterEach(() => {
-    mockAxios.mockReset();
+    mockAxios.post.mockReset();
   });
   it('should render basic layout before uploading', () => {
     expect(wrapper.find('input[type="file"]').exists()).toBeTruthy();
@@ -79,7 +79,7 @@ describe('upload.vue', () => {
     // button disabled
     // expect(wrapper.get('.upload-button').attributes('disabled')).toBeTruthy();
     const lis = wrapper.findAll('li');
-    // expect(lis.length).toBe(1);
+    expect(lis.length).toBe(1);
     // expect(lis[0].classes()).toContain('upload-item-loading');
 
     await flushPromises();
