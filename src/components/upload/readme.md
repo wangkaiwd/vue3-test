@@ -69,3 +69,14 @@ const uploadFiles = (files: File[]) => {
   }
 };
 ```
+
+provide/inject:
+```ts
+export default {
+  setup() {
+    // provide this
+    provide('uploader', getCurrentInstance())
+    return {} 
+  }  
+}
+```
