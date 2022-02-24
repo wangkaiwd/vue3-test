@@ -7,7 +7,7 @@
 * ignorePlugin : remove no used moment local file
 * split chunk from node_modules:
   * [runtimeChunk](https://webpack.js.org/configuration/optimization/#optimizationruntimechunk)
-  * npm.xxx
+  * third party modules under `node_modules` -> npm.xxx
 * routes lazy load
 
 ### nginx
