@@ -36,6 +36,7 @@ module.exports = {
         }
       }
     },
+    // why only set this plugin, change theme will work
     plugins: [
       new webpack.IgnorePlugin({
         resourceRegExp: /^\.\/locale$/,
