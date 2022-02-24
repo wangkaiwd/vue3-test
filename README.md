@@ -47,3 +47,4 @@ others:
 * import on demand not work ?
 * why loading not display before flushPromises ?
   * test loading always error
+* change theme not work with `vue.config.js` less configuration ?
