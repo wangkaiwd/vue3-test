@@ -35,7 +35,7 @@ vue code: you can use `reactive` method in any position within `script`
 const file = reactive({a:1})
 const uploadedFiles = ref([])
 uploadedFiles.value[0] = file
-// chnage origin object not trigger get/set meethod
+// chnage origin object not trigger get/set method
 file.a = 2
 uploadedFiles.a = 3
 ```
