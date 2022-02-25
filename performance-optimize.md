@@ -79,6 +79,7 @@ document of directives:
 * [add arbitrary response header](https://nginx.org/en/docs/http/ngx_http_headers_module.html#example)
 * [etag](https://nginx.org/en/docs/http/ngx_http_core_module.html#etag)
 
+http transmission optimize:
 
 #### think
 * how to check nginx running status?
