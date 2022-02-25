@@ -65,21 +65,25 @@ to there, we realize that put bundle to this directory can serve by nginx finall
 cp -r dist/* /usr/local/Cellar/nginx/1.21.6/html
 ```
 
-### http cache
-
+### http configuration
+cache:
 * expires: server set absolute cache time
   * client time may be inaccuracy
   * If there is a `Cache-Control` header with the `max-age` or `s-maxage` directive in response, the Expires header is ignored
 * Cache-Control
 * Last-Modified
 * etag
+
+compression:
 * [gzip](https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04#step-3-configuring-nginx-s-gzip-settings)
+* brotli
 
 document of directives:
 * [add arbitrary response header](https://nginx.org/en/docs/http/ngx_http_headers_module.html#example)
 * [etag](https://nginx.org/en/docs/http/ngx_http_core_module.html#etag)
 
 http transmission optimize:
+* keep alive
 
 #### think
 * how to check nginx running status?
