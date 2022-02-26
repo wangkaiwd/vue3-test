@@ -71,8 +71,8 @@ cache:
   * client time may be inaccuracy
   * If there is a `Cache-Control` header with the `max-age` or `s-maxage` directive in response, the Expires header is ignored
 * Cache-Control
-* Last-Modified
-* etag
+* Last-Modified (If-Modified-Since)
+* etag (If-None-Match)
 
 compression:
 * [gzip](https://www.digitalocean.com/community/tutorials/how-to-improve-website-performance-using-gzip-and-nginx-on-ubuntu-20-04#step-3-configuring-nginx-s-gzip-settings)
@@ -83,7 +83,11 @@ document of directives:
 * [etag](https://nginx.org/en/docs/http/ngx_http_core_module.html#etag)
 
 http transmission optimize:
-* keep alive
+* Connection: keep-alive: keep connection in certain time frame which can avoid TCP handshake and wave for each request
+  * [Timing breakdown phase explained](https://developer.chrome.com/docs/devtools/network/reference/?utm_source=devtools#timing-explanation)
+  * DNS Lookup
+  * Initial connection
+  * nginx set `keepalive_timeout  0`, server set `Connection: close` response header
 
 #### think
 * how to check nginx running status?
