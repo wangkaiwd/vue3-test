@@ -89,5 +89,11 @@ http transmission optimize:
   * Initial connection
   * nginx set `keepalive_timeout  0`, server set `Connection: close` response header
 
+https and http2:
+1. Multiplexing： parallel request amount not limited
+2. Header Compression
+
+[The Http/2 Module in nginx](https://www.nginx.com/blog/http2-module-nginx) 
+
 #### think
 * how to check nginx running status?
